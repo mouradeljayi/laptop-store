@@ -4,9 +4,49 @@
 
 {% block body %}
 
-<div class="row">
+<div class="row mb-5">
   <div class="col-md-12">
-  <h1>Home Page</h1>
+    <div class="my-3 d-flex justify-content-between align-items-center">
+      <button type="button" class="btn btn-dark position-relative">
+        Products
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ products |length }}
+          <span class="visually-hidden">products</span>
+        </span>
+      </button>
+     <div>
+        <a href="{{ path('home') }}" class="btn btn-sm btn-outline-dark mx-1">
+          All
+        </a>
+        {% for category in categories %}
+          <a href="{{ path('product_category', {category: category.id}) }}" class="btn btn-sm btn-outline-dark mx-1">
+            {{ category.name }}
+          </a>
+        {% endfor %}
+     </div>
+    </div>
+    <div class="row">
+      {% if products|length %}
+
+        {% for product in products %}
+          <div class="col-md-4">
+            <div class="card" style="width: 18rem;">
+               <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" class="card-img-top">
+               <div class="card-body">
+                  <h5 class="card-title">{{ product.name }}</h5>
+                  <p class="card-text">{{ product.description }}</p>
+                  <h5><span class="tw-bold">{{ product.price }} MAD</span></h5>
+                  <a href="{{ path('product_show', {id: product.id}) }}" class="btn btn-sm btn-secondary">display details</a>
+               </div>
+            </div>
+          </div>
+        {% endfor %}
+        {% else %}
+          <div class="alert alert-info">
+            No products for the moment
+          </div>
+      {% endif %}
+    </div>
   </div>  
 </div>
 {% endblock %}

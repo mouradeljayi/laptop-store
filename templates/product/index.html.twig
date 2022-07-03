@@ -16,6 +16,47 @@
                 <span>List of products</span>
                 <a href="{{ path('product_store') }}" class="btn btn-sm btn-primary">Add</a>
             </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.category.name }}</td>
+                                <td>{{ product.quantity }}</td>
+                                <td>{{ product.price }}</td>
+                                <td>
+                                    {% if product.image %}
+                                        <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" width="100px">
+                                        {% else %}
+                                        No image
+                                    {% endif %}
+                                    
+                                </td>
+                                <td class="d-flex justify-content-around align-items-center">
+                                    <a href="{{ path('product_show', {id: product.id}) }}" class="btn btn-sm btn-dark">show</a>
+                                    <a href="{{ path('product_edit', {id: product.id}) }}" class="btn btn-sm btn-warning">edit</a>
+                                    <form method="post" action="{{ path('product_delete', {id: product.id}) }}" id="{{ product.id }}">
+                                    </form>
+                                    <button onclick="onDelete('{{ product.id }}')" class="btn btn-sm btn-danger">delete</button>
+                                </td>
+                            </tr>
+                            
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
         </div>
     </div>

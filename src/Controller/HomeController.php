@@ -2,17 +2,48 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Category;
+use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    private $productRepository;
+    private $entityManager;
+
+    public function __construct(
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository, 
+        ManagerRegistry $doctrine)
+    {
+        $this->productRepository = $productRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->entityManager = $doctrine->getManager();
+    }
+    
+    #[Route('/', name: 'home')]
     public function index(): Response
     {
+        $products = $this->productRepository->findAll();
+        $categories = $this->categoryRepository->findAll();
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
+            'products' => $products,
+            'categories' => $categories
         ]);
     }
+
+    #[Route('/product/{category}', name: 'product_category')]
+    public function categoryProducts(Category $category): Response
+    {
+        $categories = $this->categoryRepository->findAll();
+        return $this->render('home/index.html.twig', [
+            'products' => $category->getProducts(),
+            'categories' => $categories
+        ]);
+    }
+
 }
