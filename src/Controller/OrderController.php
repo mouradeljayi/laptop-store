@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class OrderController extends AbstractController
 {
@@ -23,11 +24,16 @@ class OrderController extends AbstractController
         $this->entityManager = $doctrine->getManager();
     }
     
-    #[Route('/order', name: 'order')]
+    #[Route('/orders', name: 'orders_list')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
     public function index(): Response
     {
+        $orders = $this->orderRepository->findAll();
         return $this->render('order/index.html.twig', [
-            'controller_name' => 'OrderController',
+            'orders' => $orders,
         ]);
     }
 
@@ -49,6 +55,19 @@ class OrderController extends AbstractController
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
+        $orderExists = $this->orderRepository->findOneBy([
+            'user' => $this->getUser(),
+            'pname' => $product->getName()
+        ]);
+
+        if($orderExists) {
+            $this->addFlash(
+                'warning',
+                'Your have already ordered this product'
+            );
+
+            return $this->redirectToRoute('user_order_list');
+        }
         $order = new Order();
         $order->setPname($product->getName());
         $order->setPrice($product->getPrice());
@@ -63,6 +82,25 @@ class OrderController extends AbstractController
             );
 
         return $this->redirectToRoute('user_order_list');
+
+    }
+
+    #[Route('/update/order/{order}/{status}', name: 'order_status_update')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
+    public function updateOrder(Order $order, $status): Response
+    {
+        $order->setStatus($status);
+        $this->entityManager->persist($order);
+        $this->entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Your order status was updated'
+            );
+
+        return $this->redirectToRoute('orders_list');
 
     }
 }

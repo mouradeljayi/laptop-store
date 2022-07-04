@@ -11,6 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class ProductController extends AbstractController
 {
@@ -24,6 +25,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/products', name: 'product_list')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
     public function index(): Response
     {
         $products = $this->productRepository->findAll();
@@ -33,6 +38,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/store/product', name: 'product_store')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
     public function store(Request $request): Response
     {
         $product = new Product();
@@ -68,6 +77,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/edit/product/{id}', name: 'product_edit')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
     public function edit(Product $product, Request $request): Response
     {
         $form = $this->createForm(ProductType::class, $product) ;
@@ -100,6 +113,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/delete/product/{id}', name: 'product_delete')]
+     /**
+     * @IsGranted("ROLE_ADMIN", statusCode=404, message="Page not found")
+     * 
+     */
     public function delete(Product $product): Response
     {
         $filesystem = new Filesystem();
