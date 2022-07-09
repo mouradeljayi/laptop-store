@@ -40,9 +40,7 @@ class Product
     private $quantity;
 
     #[ORM\Column(type: 'string', length: 255)]
-    /**
-     * @Assert\NotBlank
-     */
+   
     private $image;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
